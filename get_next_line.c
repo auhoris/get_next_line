@@ -6,19 +6,21 @@
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:21:04 by auhoris           #+#    #+#             */
-/*   Updated: 2020/11/23 19:40:58 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/01 18:56:41 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
-#define BUFFER_SIZE 100
+//#define BUFFER_SIZE 100
 
 char 	*ft_nlpos(char *str)
 {
 	int 	i;
 	char 	*res;
 
+	if (str == NULL)
+		return (NULL);
 	i = 0;
 	res = NULL;
 	while (str[i] != '\0')
@@ -40,81 +42,102 @@ void 	ft_strclr(char *str)
 			*str++ = '\0';
 }
 
-char 	*ft_treat_line(char *remind, char **line)
-{
-	char 	*n_ptr;
-	char 	*temp;
 
-	n_ptr = NULL;
-	if (remind)
+char		*get_line(char **reminder, char **line)
+{
+	char	*tmp;
+	char	*nl_ptr;
+
+	nl_ptr = ft_nlpos(*reminder);
+	if (nl_ptr != NULL)
 	{
-		if ((n_ptr = ft_nlpos(remind)) != NULL)
-		{
-			*n_ptr = '\0';
-			*line = ft_strdup(remind);
-			temp = remind;
-			n_ptr++;
-			free (temp);
-			ft_strncpy(remind, n_ptr, ft_strlen(n_ptr));
-		}
-		else
-		{
-			*line = ft_strdup(remind);
-			ft_strclr(remind);
-		}
+		*nl_ptr = '\0';
+		*line = ft_strdup(*reminder);
+		tmp = ft_strdup(++nl_ptr);
+		free(*reminder);
+		*reminder = tmp;
+	}
+	else if (*reminder != NULL)
+	{
+		*line = *reminder;
+		*reminder = NULL;
 	}
 	else
-		*line = ft_strnew(1);
-	return (n_ptr);
+		*line = ft_strdup("");
+	return (nl_ptr);
 }
 
 int		get_next_line(int fd, char **line)
 {
+	char		buffer[BUFFER_SIZE + 1];
+	char		*nl_ptr;
+	static char	*reminder;
 	int		bytes_read;
-	char 	buffer[BUFFER_SIZE + 1];
-	char 	*n_ptr;
-	static char *remind;
-	char 		*temp;
+	char		*rem_tmp;
+	char		*leakline;
 
-	n_ptr = ft_treat_line(remind, line);
-	while (!n_ptr && (bytes_read = read(fd, buffer, BUFFER_SIZE)))
+	bytes_read = 0;
+	if (fd < 0 || BUFFER_SIZE < 1 || !line)
 	{
-		buffer[bytes_read] = '\0';
-		if ((n_ptr = ft_nlpos(buffer)) != NULL)
-		{
-			*n_ptr = '\0';
-			remind = ft_strdup(++n_ptr);
-		}
-		temp = *line;
-		*line = ft_strjoin(*line, buffer);
-		free (temp);
+		printf("here");
+		return (-1);
 	}
-	return (bytes_read);
+	nl_ptr = get_line(&reminder, line);
+	while (!nl_ptr && (bytes_read = read(fd, buffer, BUFFER_SIZE)))
+	{
+		if (bytes_read <= 0)
+			return (-1);
+		buffer[bytes_read] = '\0';
+		if ((nl_ptr = ft_nlpos(buffer)) != NULL)
+		{
+			*nl_ptr = '\0';
+			rem_tmp = ft_strdup(++nl_ptr);
+			if (reminder != NULL)
+				free(reminder);
+			reminder = rem_tmp;
+		}
+		leakline = *line;
+		*line = ft_strjoin(*line, buffer);
+		free(leakline);
+	}
+	return (nl_ptr ? 1 : 0);
 }
 
 int 	main(void)
 {
 	int 	fd;
 	char 	*line;
+	int	gnl;
 
-	fd = open("file.txt", O_RDONLY);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+	fd = open("file2.txt", O_RDONLY);
+	printf("HELLO");
+	while ((gnl = get_next_line(2, &line)) > 0)
+	{
+		printf("gnl >> %d\n", gnl);
+		printf("line >> %s\n", line);
+		free(line);
+	}
+	printf("gnl >> %d\n", gnl);
 	printf("line >> %s\n", line);
-	free (line);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-	printf("line >> %s\n", line);
-	free (line);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-	printf("line >> %s\n", line);
-	free (line);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-	printf("line >> %s\n", line);
-	free (line);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-	printf("line >> %s\n", line);
-	free (line);
-	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-	printf("line >> %s\n", line);
-	free (line);
+	//free(line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
+//	printf("line >> %s\n", line);
+//	free (line);
+//	printf("get_next_line >> %d\n", get_next_line(fd, &line));
 	return (0);
 }
