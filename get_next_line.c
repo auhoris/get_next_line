@@ -6,7 +6,7 @@
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:21:04 by auhoris           #+#    #+#             */
-/*   Updated: 2020/12/01 21:39:22 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/02 16:06:06 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,44 +93,3 @@ int			get_next_line(int fd, char **line)
 	}
 	return ((nl_ptr) ? 1 : 0);
 }
-//int 	main(void)
-//{
-//	int 	fd;
-//	char 	*line;
-//	int	gnl;
-//	int	number;
-//
-//	number = 1;
-//	fd = open("fewchar_perline.txt", O_RDONLY);
-//	while ((gnl = get_next_line(fd, &line)) > 0)
-//	{
-//		printf("gnl >> %d\n", gnl);
-//		printf("%d: line >> %s\n", number, line);
-//		free(line);
-//		number++;
-//	}
-////	printf("gnl >> %d\n", gnl);
-////	printf("line >> %s\n", line);
-//	free(line);
-//	//free(line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-////	printf("line >> %s\n", line);
-////	free (line);
-////	printf("get_next_line >> %d\n", get_next_line(fd, &line));
-//	return (0);
-//}
