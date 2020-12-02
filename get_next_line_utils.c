@@ -6,7 +6,7 @@
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:38:10 by auhoris           #+#    #+#             */
-/*   Updated: 2020/11/25 01:26:43 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/02 22:30:38 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,23 +22,6 @@ size_t	ft_strlen(const char *s)
 	while (s[length] != '\0')
 		length++;
 	return (length);
-}
-
-char	*ft_strnew(size_t n)
-{
-	char	*res;
-	size_t	i;
-
-	if (!(res = malloc(sizeof(*res) * (n + 1))))
-		return (NULL);
-	i = 0;
-	while (i < n)
-	{
-		res[i] = '\0';
-		i++;
-	}
-	res[i] = '\0';
-	return (res);
 }
 
 char	*ft_strjoin(char const *s1, char const *s2)
@@ -83,28 +66,4 @@ char	*ft_strdup(const char *s1)
 	}
 	p_s1[i] = '\0';
 	return (p_s1);
-}
-
-char	*ft_strncpy(char *dst, char *src, size_t len)
-{
-	size_t	i;
-
-	i = 0;
-	while (i < len)
-	{
-		if (src[i] != '\0')
-		{
-			dst[i] = src[i];
-			i++;
-		}
-		else
-		{
-			while (i < len)
-			{
-				dst[i] = '\0';
-				i++;
-			}
-		}
-	}
-	return (dst);
 }

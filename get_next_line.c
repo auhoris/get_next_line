@@ -6,7 +6,7 @@
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:21:04 by auhoris           #+#    #+#             */
-/*   Updated: 2020/12/02 16:57:13 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/02 22:41:26 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static char	*ft_nlpos(char *str)
 	return (res);
 }
 
-static int	get_line(char **reminder, char **line, char **nl_ptr)
+static int	treat_reminder(char **reminder, char **line, char **nl_ptr)
 {
 	char	*tmp;
 
@@ -84,7 +84,7 @@ int			get_next_line(int fd, char **line)
 	bytes_read = 0;
 	if (fd < 0 || BUFFER_SIZE < 1 || !line)
 		return (-1);
-	if (get_line(&reminder, line, &nl_ptr) == -1)
+	if (treat_reminder(&reminder, line, &nl_ptr) == -1)
 		return (-1);
 	while (!nl_ptr && (bytes_read = read(fd, buffer, BUFFER_SIZE)))
 	{
