@@ -6,7 +6,7 @@
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:21:04 by auhoris           #+#    #+#             */
-/*   Updated: 2020/12/02 16:06:06 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/02 16:57:13 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,17 @@ static char	*ft_nlpos(char *str)
 	return (res);
 }
 
-static char	*get_line(char **reminder, char **line)
+static int	get_line(char **reminder, char **line, char **nl_ptr)
 {
 	char	*tmp;
-	char	*nl_ptr;
 
-	nl_ptr = ft_nlpos(*reminder);
-	if (nl_ptr != NULL)
+	*nl_ptr = ft_nlpos(*reminder);
+	if (*nl_ptr != NULL)
 	{
-		*nl_ptr = '\0';
-		*line = ft_strdup(*reminder);
-		tmp = ft_strdup(++nl_ptr);
+		**nl_ptr = '\0';
+		if ((*line = ft_strdup(*reminder)) == NULL ||
+				(tmp = ft_strdup(++(*nl_ptr))) == NULL)
+			return (-1);
 		free(*reminder);
 		*reminder = tmp;
 	}
@@ -53,19 +53,24 @@ static char	*get_line(char **reminder, char **line)
 		*reminder = NULL;
 	}
 	else
-		*line = ft_strdup("");
-	return (nl_ptr);
+	{
+		if ((*line = ft_strdup("")) == NULL)
+			return (-1);
+	}
+	return (0);
 }
 
-static void	ft_checkbuf(char **reminder, char *nl_ptr)
+static int	ft_checkbuf(char **reminder, char *nl_ptr)
 {
 	char	*tmp;
 
 	*nl_ptr = '\0';
 	tmp = *reminder;
-	*reminder = ft_strdup(++nl_ptr);
+	if ((*reminder = ft_strdup(++nl_ptr)) == NULL)
+		return (-1);
 	if (tmp != NULL)
 		free(tmp);
+	return (0);
 }
 
 int			get_next_line(int fd, char **line)
@@ -79,16 +84,19 @@ int			get_next_line(int fd, char **line)
 	bytes_read = 0;
 	if (fd < 0 || BUFFER_SIZE < 1 || !line)
 		return (-1);
-	nl_ptr = get_line(&reminder, line);
+	if (get_line(&reminder, line, &nl_ptr) == -1)
+		return (-1);
 	while (!nl_ptr && (bytes_read = read(fd, buffer, BUFFER_SIZE)))
 	{
 		if (bytes_read <= 0)
 			return (-1);
 		buffer[bytes_read] = '\0';
 		if ((nl_ptr = ft_nlpos(buffer)) != NULL)
-			ft_checkbuf(&reminder, nl_ptr);
+			if (ft_checkbuf(&reminder, nl_ptr) == -1)
+				return (-1);
 		leakline = *line;
-		*line = ft_strjoin(*line, buffer);
+		if ((*line = ft_strjoin(*line, buffer)) == NULL)
+			return (-1);
 		free(leakline);
 	}
 	return ((nl_ptr) ? 1 : 0);
