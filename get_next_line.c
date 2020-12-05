@@ -5,8 +5,8 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2020/11/23 12:21:04 by auhoris           #+#    #+#             */
-/*   Updated: 2020/12/04 12:28:58 by auhoris          ###   ########.fr       */
+/*   Created: 2020/12/06 00:54:21 by auhoris           #+#    #+#             */
+/*   Updated: 2020/12/06 00:54:32 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,23 +52,35 @@ static int	ft_checkbuf(char **reminder, char *nl_ptr)
 	return (0);
 }
 
-static int	get_line(int fd, char **line, char **reminder)
+int			check_fd(int fd)
+{
+	char	buffer[BUFFER_SIZE + 1];
+	int		bytes_read;
+
+	bytes_read = read(fd, buffer, 0);
+	if (bytes_read < 0)
+		return (0);
+	return (1);
+}
+
+int			get_next_line(int fd, char **line)
 {
 	char		buffer[BUFFER_SIZE + 1];
 	char		*nl_ptr;
 	int			bytes_read;
 	char		*leakline;
+	static char	*reminder;
 
 	bytes_read = 0;
-	if (treat_reminder(&(*reminder), line, &nl_ptr) == -1)
+	if (fd < 0 || BUFFER_SIZE < 1 || line == NULL || !check_fd(fd))
+		return (-1);
+	if (treat_reminder(&reminder, line, &nl_ptr) == -1)
 		return (-1);
 	while (!nl_ptr && (bytes_read = read(fd, buffer, BUFFER_SIZE)))
 	{
-		if (bytes_read <= 0)
-			return (-1);
 		buffer[bytes_read] = '\0';
 		if ((nl_ptr = ft_nlpos(buffer)) != NULL)
-			if (ft_checkbuf(&(*reminder), nl_ptr) == -1)
+			if (ft_checkbuf(&reminder, nl_ptr) == -1)
 				return (-1);
 		leakline = *line;
 		if ((*line = ft_strjoin(*line, buffer)) == NULL)
@@ -76,45 +88,4 @@ static int	get_line(int fd, char **line, char **reminder)
 		free(leakline);
 	}
 	return ((nl_ptr) ? 1 : 0);
-}
-
-static void	lstclear(t_gnl **lst)
-{
-	t_gnl	*sv_lst;
-
-	if (!(*lst))
-		return ;
-	while (*lst)
-	{
-		sv_lst = *lst;
-		*lst = (*lst)->next;
-		if ((*lst)->reminder)
-			free((*lst)->reminder);
-		free(sv_lst);
-	}
-	*lst = NULL;
-}
-
-int			get_next_line(int fd, char **line)
-{
-	static t_gnl	*head;
-	t_gnl			*save_h;
-
-	if (fd < 0 || BUFFER_SIZE < 1 || !line)
-		return (-1);
-	if (head == NULL)
-		if (!(head = new_elem(fd)))
-			return (-1);
-	save_h = head;
-	while (save_h->fd != fd)
-	{
-		if (save_h->next == NULL)
-			if ((save_h->next = new_elem(fd)) == NULL)
-			{
-				lstclear(&head);
-				return (-1);
-			}
-		save_h = save_h->next;
-	}
-	return (get_line(save_h->fd, line, &save_h->reminder));
 }

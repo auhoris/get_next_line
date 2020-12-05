@@ -1,28 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_utils.c                              :+:      :+:    :+:   */
+/*   get_next_line_utils_bonus.c                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: auhoris <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/11/23 12:38:10 by auhoris           #+#    #+#             */
-/*   Updated: 2020/12/03 01:17:44 by auhoris          ###   ########.fr       */
+/*   Updated: 2020/12/06 00:33:34 by auhoris          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-
-t_gnl	*new_elem(int fd)
-{
-	t_gnl	*new;
-
-	if (!(new = malloc(sizeof(*new))))
-		return (NULL);
-	new->fd = fd;
-	new->reminder = NULL;
-	new->next = NULL;
-	return (new);
-}
+#include "get_next_line_bonus.h"
 
 char	*ft_nlpos(char *str)
 {
